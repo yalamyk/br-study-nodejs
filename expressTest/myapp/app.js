@@ -85,3 +85,22 @@ app.get('/topic/:id/:mode',function(req, res){
 	res.send(req.params.id+' , '+req.params.mode);
 });
 // ****************************************** 
+// ****************************************** form의 사용
+app.get('/form',function(req,res){
+	res.render('form');
+});
+// ******************************************
+//****************************************** post 방식으로 받기
+
+// app.get('/form_receiver', function(req,res){
+// 	var title=req.query.title;
+// 	var description = req.query.description;
+// 	res.send(title+', '+description);
+// });
+var bodyParser = require('body-parser'); //미들웨어로드 : post방식일 경우 url에 값이 없기 때문에 body의 값을 받아와야 됨.
+app.use(bodyParser.urlencoded({ extended: false }));
+app.post('/form_receiver',function(req,res){
+	var title = req.body.title; //body로 받아오는것을 가로챌수있다...
+	var description = req.body.description;
+	res.send(title+', '+description);
+});
