@@ -11,7 +11,14 @@ app.listen(3000,function(){
 	console.log('Connected, 3000 port');
 });
 app.get('/topic/new',function(req,res){
-	res.render('new');
+	fs.readdir('data', function(err,files){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error'); //send가 실행되면 다음 코드는 실행되지 않는다.
+		}
+		res.render('new',{topics:files});
+	});
+	
 });
 //topic, topic/:id 두가지 경우의 url을 받았을경우.
 //아래의 문제가 있기 때문에 이렇게 작성한다.
@@ -36,19 +43,20 @@ app.get(['/topic', '/topic/:id'],function(req, res){
 	});
 	//res.render('view');
 });
-// app.post('/topic',function(req,res){
-// 	var title = req.body.title;
-// 	var description = req.body.description;
+app.post('/topic',function(req,res){
+	var title = req.body.title;
+	var description = req.body.description;
 
-// 	fs.writeFile('data/'+title, description, function(err){
-// 		if(err){
-// 			res.status(500).send('Internal Server Error'); //send가 실행되면 다음 코드는 실행되지 않는다.
-// 			//사용자에게 500이라는 에러가 있다는것을 전달.
-// 			//자세한 정보는 전달하지 않는다. : 해킹의 위험이 될 수 있는 정보가 있을 수 있다.
-// 		}
-// 		res.send('Success!');
-// 	});
-// });
+	fs.writeFile('data/'+title, description, function(err){
+		if(err){
+			res.status(500).send('Internal Server Error'); //send가 실행되면 다음 코드는 실행되지 않는다.
+			//사용자에게 500이라는 에러가 있다는것을 전달.
+			//자세한 정보는 전달하지 않는다. : 해킹의 위험이 될 수 있는 정보가 있을 수 있다.
+		}
+		//res.send('Success!');
+		res.redirect('/topic/'+title); //redirect : 보내버린다.
+	});
+});
 app.get('/topic', function(req,res){ //주소를 직접 치고 들어오는 것이 get이다.
 	fs.readdir('data', function(err,files){
 		if(err){
