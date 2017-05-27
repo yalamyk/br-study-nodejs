@@ -1,14 +1,35 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var multer = require('multer');
+var _storage = multer.diskStorage({
+	destination:function(req,file,cb){
+		cb(null,'uploads/');
+	},
+	filename:function(req,file,cb){
+		cb(null,file.originalname);
+	}
+}); //sotrage는 multer에서 좀더 많은것을 제공한다.
+
+
+//var upload = multer({dest:'uplads/'});
+var upload = multer({storage:_storage});
 var fs = require('fs');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/user', express.static('uploads')); //upload라는 정적인 파일을 사용할 수 있게된다.
 app.set('views', './views_file');
 app.set('view engine','jade');
 
 app.listen(3000,function(){
 	console.log('Connected, 3000 port');
+});
+app.get('/upload',function(req,res){
+	res.render('upload');
+});
+app.post('/upload', upload.single('userfile'), function(req,res){
+	res.send('Upload!!!'+req.file.filename);
+	console.log(req.file); //destination : 목적지
 });
 app.get('/topic/new',function(req,res){
 	fs.readdir('data', function(err,files){
