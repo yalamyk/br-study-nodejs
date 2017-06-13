@@ -1,0 +1,24 @@
+doctype html
+html
+	head
+		meta(charset="utf-8")
+	body
+		h1 
+			a(href="/topic") Server Side JavaScript
+		ul
+			each topic in topics
+				li
+					- rid = encodeURIComponent(topic['@rid'])
+					a(href="/topic/"+rid)= topic.title
+		article
+			h1= 'Delete?'+topic.title
+			- rid = encodeURIComponent(topic['@rid'])
+			form(action="/topic/"+rid+"/delete" method="post")
+				p
+					input(type="submit" value="YES")
+			a(href="/topic/"+rid) No
+
+//- [YES 버튼을 link로 사용하지 않은 이유 - 중요]
+//- 검색엔진은 link를 타고 동작.
+//- 만약 브라우저 확장 도구를 내가 설치해서 사용할때, 해당 확장도구가 동작할때 link로 브라우저를 탐색하면서 해당 link를 탐지한다고 한다면, 의도와는 다른 삭제 명령이 실행되게 된다.
+//- ===>[삭제, 생성 등은 무조건 post를 사용해야 한다.]
