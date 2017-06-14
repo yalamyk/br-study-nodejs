@@ -55,8 +55,21 @@ app.get('/topic/new',function(req,res){
 app.get(['/topic', '/topic/:id'],function(req, res){
 	var sql = "SELECT id,title FROM topic";
 	conn.query(sql, function(err, topics, filelds){
+		var id = req.params.id;
+		if(id){
+			var sql="SELECT * FROM topic WHERE id=?";
+			conn.query(sql,[id],function(err,topic,fields){
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}else{
+					res.render('view',{topics:topics, topic:topic[0]});
+				}
+			});
+		}else{
+			res.render('view', {topics:topics});
+		}
 		//res.send(topics); 객체 전달 : [{},{}..]
-		res.render('view', {topics:topics});
 	});
 });
 app.post('/topic',function(req,res){
