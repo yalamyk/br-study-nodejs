@@ -8,3 +8,4 @@ get('topic/:id/edit') : edit.jade
 	get('topic/:id')
 get('topic/:id/delete') : delete.jade
 	post('topic/:id/delete')
+	get('topic/')
