@@ -66,6 +66,44 @@ app.post('/topic/add',function(req,res){
 		}
 	});
 });
+app.get(['/topic/:id/edit'],function(req, res){
+	var sql = "SELECT id,title FROM topic";
+	conn.query(sql, function(err, topics, filelds){
+		var id = req.params.id;
+		if(id){
+			console.log('id : '+id);
+			var sql="SELECT * FROM topic WHERE id=?";
+			conn.query(sql,[id],function(err,topic,fields){
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}else{
+					res.render('edit',{topics:topics, topic:topic[0]});
+				}
+			});
+		}else{
+			console.log('There is no id.');
+			res.status(500).send('Internal Server Error');
+		}
+		//res.send(topics); 객체 전달 : [{},{}..]
+	});
+});
+app.post(['/topic/:id/edit'],function(req, res){
+	var title = req.body.title;
+	var description = req.body.description;
+	var author = req.body.author;
+	var id = req.params.id;
+	var sql = "UPDATE topic SET title=?, description=?, author=? WHERE id=?";
+
+	conn.query(sql, [title, description, author, id], function(err, results, fields){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			res.redirect('/topic/'+id);
+		}
+	});
+});
 //topic, topic/:id 두가지 경우의 url을 받았을경우.
 //아래의 문제가 있기 때문에 이렇게 작성한다.
 app.get(['/topic', '/topic/:id'],function(req, res){
