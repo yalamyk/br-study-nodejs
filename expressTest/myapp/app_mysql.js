@@ -40,15 +40,31 @@ app.post('/upload', upload.single('userfile'), function(req,res){
 	res.send('Upload!!!'+req.file.filename);
 	console.log(req.file); //destination : 목적지
 });
-app.get('/topic/new',function(req,res){
-	fs.readdir('data', function(err,files){
+app.get('/topic/add',function(req,res){
+	var sql = "SELECT id,title FROM topic";
+	conn.query(sql, function(err, topics, fields){
 		if(err){
 			console.log(err);
-			res.status(500).send('Internal Server Error'); //send가 실행되면 다음 코드는 실행되지 않는다.
+			res.status(500).send('Internal Server Error');
+		}else{
+			res.render('add',{topics:topics});
 		}
-		res.render('new',{topics:files});
 	});
-	
+});
+app.post('/topic/add',function(req,res){
+	var title = req.body.title;
+	var description = req.body.description;
+	var author = req.body.author;
+	var sql = "INSERT INTO topic (title, description, author) VALUES(?,?,?)";
+
+	conn.query(sql, [title, description, author], function(err, results, filelds){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			res.redirect('/topic/'+results.insertId);
+		}
+	});
 });
 //topic, topic/:id 두가지 경우의 url을 받았을경우.
 //아래의 문제가 있기 때문에 이렇게 작성한다.
@@ -57,6 +73,7 @@ app.get(['/topic', '/topic/:id'],function(req, res){
 	conn.query(sql, function(err, topics, filelds){
 		var id = req.params.id;
 		if(id){
+			console.log('id : '+id);
 			var sql="SELECT * FROM topic WHERE id=?";
 			conn.query(sql,[id],function(err,topic,fields){
 				if(err){
@@ -70,20 +87,6 @@ app.get(['/topic', '/topic/:id'],function(req, res){
 			res.render('view', {topics:topics});
 		}
 		//res.send(topics); 객체 전달 : [{},{}..]
-	});
-});
-app.post('/topic',function(req,res){
-	var title = req.body.title;
-	var description = req.body.description;
-
-	fs.writeFile('data/'+title, description, function(err){
-		if(err){
-			res.status(500).send('Internal Server Error'); //send가 실행되면 다음 코드는 실행되지 않는다.
-			//사용자에게 500이라는 에러가 있다는것을 전달.
-			//자세한 정보는 전달하지 않는다. : 해킹의 위험이 될 수 있는 정보가 있을 수 있다.
-		}
-		//res.send('Success!');
-		res.redirect('/topic/'+title); //redirect : 보내버린다.
 	});
 });
 app.get('/topic', function(req,res){ //주소를 직접 치고 들어오는 것이 get이다.
