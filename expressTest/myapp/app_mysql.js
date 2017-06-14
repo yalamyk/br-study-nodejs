@@ -104,6 +104,33 @@ app.post(['/topic/:id/edit'],function(req, res){
 		}
 	});
 });
+app.get('/topic/:id/delete', function(req,res){
+	var sql = "SELECT id,title FROM topic";
+	var id = req.params.id;
+	conn.query(sql, function(err, topics, fields){
+		var sql = "SELECT * FROM topic WHERE id=?";
+		conn.query(sql, [id], function(err,topic){
+			if(err){
+				console.log(err);
+				res.status(500).send('Internal Server Error');
+			}else{
+				if(topic.length == 0){
+					console.log('There is no record.');
+					res.status(500).send('Internal Server Error');
+				}else{
+					res.render('delete', {topics:topics, topic:topic[0]});
+				}
+			}
+		});
+	});
+});
+app.post('/topic/:id/delete',function(req,res){
+	var id = req.params.id;
+	var sql = "DELETE FROM topic WHERE id=?";
+	conn.query(sql, [id], function(err, results){
+		res.redirect('/topic/');
+	});
+});
 //topic, topic/:id 두가지 경우의 url을 받았을경우.
 //아래의 문제가 있기 때문에 이렇게 작성한다.
 app.get(['/topic', '/topic/:id'],function(req, res){
