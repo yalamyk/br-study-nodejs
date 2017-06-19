@@ -69,10 +69,12 @@ app.get('/welcome',function(req,res){
 			<a href="/auth/login">login</a>
 		`);
 	}
-	res.send(req.session);
+	//res.send(req.session);
 });
-app.get('/w')
-
+app.get('/auth/logout',function(req,res){
+	delete req.session.displayName;
+	res.redirect('/welcome');
+});
 app.listen(3303, function(){
 	console.log('Connect 3303 port!!');
 });
