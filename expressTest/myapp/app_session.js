@@ -1,14 +1,17 @@
 var express = require('express');
 var session = require('express-session');
 //npm install express-session --save : express는 session을 지원하지 않는다.
-
+var FileStore = require('session-file-store')(session);
+//session-file-store : session을 파일에 저장하고 싶을때 사용하는 모듈 - express-session에 의존하고 있기 때문에 의존 관계를 명시한다.
 var bodyParser = require('body-parser');
 var app = express();
+
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(session({
   secret: '1234481723!@#!@#thisiskeyvalue',
   resave: false,
   saveUninitialized: true,
+  store:new FileStore()
   //cookie: { secure: true }
 }));
 app.get('/count',function(req,res){
