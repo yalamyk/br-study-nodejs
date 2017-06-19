@@ -7,5 +7,7 @@
 - cookie는 기록됨. 알 수 있다.
 - Set-Cookie
 - 접속 브라우저마다 다른 상태를 유지.
-
+- http : 쿠키값을 중간에 볼 수 있음(로그인 등의 값이 중간에 가로채일 수 있다. - 문제)
+- https: 암호화된 cookie값
+- cookieParser('key값') = cookie값 자체를 암호화 할 수 있다.
 [SESSION]

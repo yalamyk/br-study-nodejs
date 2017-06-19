@@ -1,8 +1,11 @@
+// 아래 코드는 장바구니 코드입니다. 
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var app = express();
 
-app.use(cookieParser());
+app.use(cookieParser('234456788999976543!@!@!@!@as'));
+// cookieParser('key값') : 해당 key 값으로 암호화를 한다.
+// 암호화를 했다고 하더라도 id,password의 값은 절대 cookie값에 저장하지 않는다. : 다른 대안 방법이 있음.
 
 var products = {
 	1:{title:'The history of web 1'},
@@ -23,15 +26,17 @@ app.get('/products', function(req,res){
 	res.send(`<h1>Products</h1><ul>${output}</ul><a href="/cart">Cart</a>`);
 })
 app.get('/count',function(req,res){
-	if(req.cookies.count){
-		var count = parseInt(req.cookies.count);
+	if(req.signedCookies.count){
+		var count = parseInt(req.signedCookies.count);
 	}else{
 		var count = 0;
 	}
-	
-	res.cookie('count',count+1);
+	count = count + 1;
+	res.cookie('count', count, {signed:true});
 	res.send('count : '+count);
+	//requst header안에 cookie값이 있다.
 }); //웹 브라우저가 저장하고 있다가 반환(같은 url안에서만 유효)
+
 
 /*
 var cart = {
@@ -43,8 +48,8 @@ var cart = {
 app.get('/cart/:id', function(req,res){
 	//cart(장바구니)를 생성한다.
 	var id = req.params.id;
-	if(req.cookies.cart){
-		var cart = req.cookies.cart;
+	if(req.signedCookies.cart){
+		var cart = req.signedCookies.cart;
 	}else{
 		var cart = {};
 	}
@@ -55,12 +60,12 @@ app.get('/cart/:id', function(req,res){
 
 	cart[id] = parseInt(cart[id])+1;
 
-	res.cookie('cart',cart);
+	res.cookie('cart',cart, {signed:true});
 	//res.send(cart);
 	res.redirect('/cart');
 });
 app.get('/cart',function(req,res){
-	var cart = req.cookies.cart;
+	var cart = req.signedCookies.cart;
 	if(!cart){
 		res.send('empty!');
 	}else{
