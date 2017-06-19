@@ -5,9 +5,18 @@
 [COOKIE]
 - http : 상태가 없음(이전에 했던 접속을 다음에 했는지 알 수 없음. 할 수 없음.)
 - cookie는 기록됨. 알 수 있다.
-- Set-Cookie
+- request headers > set-cookie 
 - 접속 브라우저마다 다른 상태를 유지.
 - http : 쿠키값을 중간에 볼 수 있음(로그인 등의 값이 중간에 가로채일 수 있다. - 문제)
 - https: 암호화된 cookie값
 - cookieParser('key값') = cookie값 자체를 암호화 할 수 있다.
+
 [SESSION]
+- cookie는 id,password값이 중간에 탈취 될 수 있다.(cookie의 문제점)
+- cookie의 기능과 server쪽에서 데이터를 저장할 수 있는 공간을 잘 조합해서 session을 만들어 사용하면 훨씬 좋은 접근이다.
+- save only id(식별자만 저장) : 지정한 id값만 사용자 브라우저에 저장되고 그 나머지는 서버쪽에 실제 데이터 real data가 저장이 된다.
+- 사용자 -> 식별자 전달 -> database등에서 읽어와서 사용할 수 있게 된다.
+====> request headers > set-cookie > connect.sid(해당 sid가 같으면 같은 사용자이다.) 사용자 pc에는 저장되는 값이 없고 서버에만 저장됨.
+- sid값 별로 서버에 저장된다.
+- express-session은 기본적으로 메모리에 저장을 시킨다. 에플리케이션을 종료후 스타트할 경우 데이터는 모두 날아간다.
+ ====> 개발용으로는 편하지만 실제 서비스 할때는 express-session을 사용하는 것이 아니라 database에 저장이 되어야 한다.
