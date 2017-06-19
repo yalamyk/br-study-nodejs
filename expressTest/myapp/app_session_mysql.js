@@ -1,14 +1,24 @@
 var express = require('express');
 var session = require('express-session');
 //npm install express-session --save : express는 session을 지원하지 않는다.
-
+var MySQLStore = require('express-mysql-session')(session);
+//option에 입력한 databse에 sessions라는 테이블이 생성이 된다.
+//만들어진 sessions의 행은 3가지 이다 : session_id expires(언제 만료 되는지) data
 var bodyParser = require('body-parser');
 var app = express();
+
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(session({
   secret: '1234481723!@#!@#thisiskeyvalue',
   resave: false,
   saveUninitialized: true,
+  store:new MySQLStore({
+  	host:'localhost',
+  	port:3306,
+  	user:'root',
+  	password:'passpass',
+  	database:'o2'
+  }) //mysql은 database이기 때문에 options를 반드시 넣어야함
   //cookie: { secure: true }
 }));
 app.get('/count',function(req,res){
@@ -51,7 +61,9 @@ app.post('/auth/login',function(req,res){
 	if(uname === user.username && pwd === user.password){
 		//res.send('hello master');
 		req.session.displayName = user.displayName;
-		res.redirect('/welcome');
+		req.session.save(function(){
+			res.redirect('/welcome');
+		});
 	}else{
 		res.send('who are you? <a href="/auth/login">login</a>');
 	}
@@ -73,7 +85,12 @@ app.get('/welcome',function(req,res){
 });
 app.get('/auth/logout',function(req,res){
 	delete req.session.displayName;
-	res.redirect('/welcome');
+	//database를 사용하는 경우 redirect을 했을때 database에 접근하기 전에 redirect가 되어 원하는 결과가 나오지 않을 수 있다.
+	//database사용 - redirect사용할 경우 ==> callback function으로 작성하여 오작동을 방지한다.
+	req.session.save(function(){
+		res.redirect('/welcome'); 
+	});
+	
 });
 app.listen(3303, function(){
 	console.log('Connect 3303 port!!');
