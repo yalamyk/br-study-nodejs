@@ -1,0 +1,17 @@
+[HTTP의 구체적인 모습]
+
+HTTP : Hypertext(html) Transfer(운반) Protocol(통신규약)
+만든사람 : tim berners-lee
+
+'''''''''''''''''''''''''''''''''''''''
+WEB BROWSER === request ===> WEB SERVER
+            <== response ==
+===> 위의 내용은 CHROME 개발자 도구로 확인 가능 
+''''''''''''''''''''''''''''''''''''''
+ 1. CHROME 개발자 도구 - Network - www.접속한 페이지.com - Headers
+   - 웹 서버(브라우저)가 보내는 정보들이 담겨져 있다.
+   - Request Headers - User-Agent : User-Agent는 웹 브라우저. 사용자가 어떤 웹브라우저로 접속했는지 전달하는 정보이다.
+   - Accept-Encoding:gzip, deflate, sdch, br : 압축에 대한 정보
+   - Cookie
+
+
